@@ -6,7 +6,7 @@ export async function getDb() {
 
   try {
     // Connect to the SurrealDB instance
-    await db.connect("ws://receiving-hawk-pmid-universities.trycloudflare.com/rpc", {
+    await db.connect("ws://dont-dakota-ne-cambodia.trycloudflare.com/rpc", {
       auth: {
         username: "root",
         password: "Kp123@$@***",
