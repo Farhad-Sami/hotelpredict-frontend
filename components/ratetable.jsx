@@ -148,7 +148,7 @@ export default function DataTableDemo({ data }) {
   })
 
   return (
-    <div>
+    <div className="text-foreground">
       <div className="flex items-center py-4">
         <Input
           placeholder="Filter RoomTypes..."
