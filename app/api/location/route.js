@@ -62,7 +62,7 @@ export async function GET(request) {
     if (search.length > 2) {
       // Query SurrealDB to find matching rows
       const query = `
-        SELECT * FROM locations WHERE keyword CONTAINS $search;
+        SELECT destination,destination_keyword FROM details WHERE destination_keyword CONTAINS $search GROUP BY destination LIMIT 20;
       `;
       results = (await db.query(query, { search }))[0];
       // console.log(results);

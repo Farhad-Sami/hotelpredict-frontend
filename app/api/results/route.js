@@ -277,7 +277,7 @@ export async function GET(request) {
     let results = [];
     if (search.length > 2) {
       const query = `
-        SELECT * FROM details WHERE location CONTAINS $search;
+        SELECT * FROM details WHERE destination CONTAINS $search;
       `;
       console.log(search);
       results = (await db.query(query, { search }))[0];
