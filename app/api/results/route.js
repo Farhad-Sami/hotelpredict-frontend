@@ -283,7 +283,7 @@ export async function GET(request) {
       results = (await db.query(query, { search }))[0];
       for (let i = 0; i < results.length; i++) {
         const element = results[i];
-        if (i < 5) {
+        if (i < 10) {
           const prp = element.property_id;
           const regionId = new URL(element.url).searchParams.get('regionId') || '3073';
           const req = await makeRequest(prp, getDateWithAddedDays(), getDateWithAddedDays(1), regionId)
@@ -309,14 +309,19 @@ export async function GET(request) {
             const eleav = ele.availability
             let av;
             try {
-              av = parseInt(eleav.match(/\d+/)) || 0
+              av = parseInt(eleav.match(/\d+/)) // || 0
             } catch (error) {
               av = eleav
             }
-            if (av == 0) {
+            if (av == 0 && ele.normalPrice != null) {
               av = tempavail
             }
-            allavailability = allavailability + av
+            if (total_room==30) {
+              console.log(av)
+            }
+            if(av>0){ 
+              allavailability = allavailability + av
+            }
           }
 
 
