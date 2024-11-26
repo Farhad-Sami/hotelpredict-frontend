@@ -143,8 +143,8 @@ export default function App() {
                   onSelectionChange={onSelectionChange}
                 >
                   {(item) => (
-                    <AutocompleteItem key={item.keyword} className="capitalize">
-                      {item.location}
+                    <AutocompleteItem key={item.destination_keyword} className="capitalize">
+                      {item.destination}
                     </AutocompleteItem>
                   )}
                 </Autocomplete>
