@@ -8,6 +8,7 @@ import cities from './cities.json'
 import titles from './titles.json'
 import destinations from './destinations.json'
 import { Image } from "@nextui-org/react";
+import { Skeleton } from "@/components/ui/skeleton"
 
 export default function ControllableStates() {
     const [searchTerm, setSearchTerm] = React.useState('');
@@ -17,11 +18,14 @@ export default function ControllableStates() {
     const [selectedKeys, setSelectedKeys] = React.useState(new Set(["text"]));
     const [hoteldata, sethoteldata] = React.useState([]);
 
+    const [loading, setLoading] = React.useState(true);
+
 
     const selectedValue = React.useMemo(
         () => Array.from(selectedKeys).join(", "),
         [selectedKeys]
     );
+
     const fetchData = async (search, keyword) => {
         const data = await fetch(`/api/filter?search=${search}&keyword=${keyword}`);
         return data.json();
@@ -30,7 +34,9 @@ export default function ControllableStates() {
     const handleSearch = async () => {
         // console.log(searchTerm, selected);
         // user filter api and set column to selected and search term to searchTerm
+        setLoading(true)
         const data = await fetchData(searchTerm, selected);
+        setLoading(false)
         console.log(data.results);
         sethoteldata(data.results);
     }
@@ -147,63 +153,78 @@ export default function ControllableStates() {
                     Start Comparing: {Array.from(selectedKeys).length - 1} Hotels
                 </Button>
             </Card>
-            <Listbox
-                aria-label="Single selection example"
-                variant="flat"
-                disallowEmptySelection
-                selectionMode="multiple"
-                selectedKeys={selectedKeys}
-                onSelectionChange={setSelectedKeys}
-            >
-                {hoteldata.map((item) => (
-                    <>
-                        <ListboxItem key={item.hotel_id}>
-                            <Card
-                                isBlurred
-                                // className="border-none"
-                                shadow="sm"
-                            >
-                                <CardBody>
-                                    <div className="grid grid-cols-6 md:grid-cols-12 gap-6 md:gap-4 items-center justify-center">
-                                    <div className="relative col-span-6 md:col-span-4">
-                              <Image
-                                alt="Album cover"
-                                className="object-cover"
-                                height={200}
-                                shadow="md"
-                                src={JSON.parse(item.images).thumbnail[0]}
-                                width="100%"
-                              />
-                            </div>
-                                        <div className="flex flex-col col-span-6 md:col-span-8">
-                                            <div className="flex justify-between items-start">
-                                                <div className="flex flex-col gap-0">
-                                                    <h1 className="text-large">{item.title}</h1>
-                                                    <p className="text-small text-foreground/80">City: {item.city}</p>
-                                                    <h2 className="text-small font-medium mt-2"> Rating: {item.rating}</h2>
-                                                    <h2 className="text-small font-medium mt-2">Review: {item.review}</h2>
-                                                    <h2 className="text-small font-medium mt-2">Total Room: {item.total_room}</h2>
-                                                </div>
-                                            </div>
 
-                                            <div className="flex flex-col mt-3 gap-1">
-                                                <div className="flex justify-between">
-                                                    <div className="flex w-full items-center justify-evenly text-center">
-                                                        <div><p>ADR</p><p>${item.adr}</p></div>
-                                                        <div><p>RevPer</p><p>${item.rev}</p></div>
-                                                        <div><p>Occupency</p><p>{item.occupancy}%</p></div>
+            {loading || hoteldata.length === 0 ? (
+                <div className="flex flex-col items-center p-10 justify-center space-y-3">
+                    <Skeleton className="h-[125px] w-[50vw] rounded-xl" />
+                    <div className="space-y-2">
+                        <Skeleton className="h-4 w-[250px]" />
+                        <Skeleton className="h-4 w-[200px]" />
+                    </div>
+                </div>
+            ) : (
+                <>
+                    <Listbox
+                        aria-label="Single selection example"
+                        variant="flat"
+                        disallowEmptySelection
+                        selectionMode="multiple"
+                        selectedKeys={selectedKeys}
+                        onSelectionChange={setSelectedKeys}
+                    >
+                        {hoteldata.map((item) => (
+                            <>
+                                <ListboxItem key={item.hotel_id}>
+                                    <Card
+                                        isBlurred
+                                        // className="border-none"
+                                        shadow="sm"
+                                    >
+                                        <CardBody>
+                                            <div className="grid grid-cols-6 md:grid-cols-12 gap-6 md:gap-4 items-center justify-center">
+                                                <div className="relative col-span-6 md:col-span-4">
+                                                    <Image
+                                                        alt="Album cover"
+                                                        className="object-cover"
+                                                        height={200}
+                                                        shadow="md"
+                                                        src={JSON.parse(item.images).thumbnail[0]}
+                                                        width="100%"
+                                                    />
+                                                </div>
+                                                <div className="flex flex-col col-span-6 md:col-span-8">
+                                                    <div className="flex justify-between items-start">
+                                                        <div className="flex flex-col gap-0">
+                                                            <h1 className="text-large">{item.title}</h1>
+                                                            <p className="text-small text-foreground/80">City: {item.city}</p>
+                                                            <h2 className="text-small font-medium mt-2"> Rating: {item.rating}</h2>
+                                                            <h2 className="text-small font-medium mt-2">Review: {item.review}</h2>
+                                                            <h2 className="text-small font-medium mt-2">Total Room: {item.total_room}</h2>
+                                                        </div>
                                                     </div>
-                                                    <p className="text-xl">${item.price}</p>
+
+                                                    <div className="flex flex-col mt-3 gap-1">
+                                                        <div className="flex justify-between">
+                                                            <div className="flex w-full items-center justify-evenly text-center">
+                                                                <div><p>ADR</p><p>${item.adr}</p></div>
+                                                                <div><p>RevPer</p><p>${item.rev}</p></div>
+                                                                <div><p>Occupency</p><p>{item.occupancy}%</p></div>
+                                                            </div>
+                                                            <p className="text-xl">${item.price}</p>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    </div>
-                                </CardBody>
-                            </Card>
-                        </ListboxItem>
-                    </>
-                ))}
-            </Listbox>
+                                        </CardBody>
+                                    </Card>
+                                </ListboxItem>
+                            </>
+                        ))}
+                    </Listbox>
+                </>
+            )}
+
+
         </div>
     );
 }
