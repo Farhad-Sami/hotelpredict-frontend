@@ -1,10 +1,10 @@
 'use client';
 import * as React from "react";
 import { IconSvgProps } from "@/types";
-import { useTheme } from "next-themes";
+// import { useTheme } from "next-themes";
 
 export const Logo= () => {
-  const { theme } = useTheme();
+  // const { theme } = useTheme();
   
   return (
     <svg
@@ -13,7 +13,8 @@ export const Logo= () => {
       viewBox="0 0 1640 223"
       width={150}
       height={100}
-      className={theme === 'light' ? "fill-black" : "fill-white"}
+      fill="currentColor"
+      // className={theme === 'light' ? "fill-black" : "fill-white"}
     >
       {/* <style>{`
         .s0 {

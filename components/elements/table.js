@@ -1,17 +1,17 @@
 "use client";
 import { useState, useEffect } from "react";
-// import { Radio, RadioGroup } from "@nextui-org/radio";
+import { Radio, RadioGroup } from "@nextui-org/radio";
 import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, getKeyValue } from "@nextui-org/table";
 
 import { Pagination, } from "@nextui-org/pagination";
 import { Button } from "@nextui-org/button";
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure } from "@nextui-org/modal";
 import useSWR from "swr";
-import { useTheme } from "next-themes";
+// import { useTheme } from "next-themes";
 const fetcher = (...args) => fetch(...args).then((res) => res.json());
 
 export default function App({ selectedKey, selected }) {
-    const { theme } = useTheme();
+    // const { theme } = useTheme();
     const { isOpen, onOpen, onClose } = useDisclosure();
     const [backdrop, setBackdrop] = useState('blur')
 
@@ -53,9 +53,10 @@ export default function App({ selectedKey, selected }) {
                 width="40"
                 height="40"
                 viewBox="0 0 4096 4096"
+                fill="currentColor"
                 className="animate-ping"
             >
-                <g className={theme === 'light' ? "fill-black" : "fill-white"}>
+                <g>
                     <path
                         d="m3064.3 1750.9l-276-478.5-498.9 859.2-639.1-393.1 705.3-1215.2-302.1-523.3-849.7 1463.5-263.1 453.7-940.7 1620.8h605.7l781.6-1346.3 639 393.1-553.3 953.2h606.2l393.7-678.2 263-453.7 354.6-610z"
                         fill="currentColor"
