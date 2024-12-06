@@ -3,7 +3,7 @@ const axios = require('axios');
 async function fetchData(search, keyword, page) {
   try {
     // Prepare the URL with query parameters
-    const url = `https://sofa-essay-niger-prison.trycloudflare.com/?search=${search}&column=${keyword}&page=${page}`;
+    const url = `https://experiences-gothic-investigate-with.trycloudflare.com/?search=${search}&column=${keyword}&page=${page}`;
     // const url = `http://localhost:8000/?search=${search}&column=${keyword}&page=${page}`;
 
     // Send a GET request

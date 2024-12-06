@@ -139,12 +139,12 @@ export default function App({ selectedKey, selected, dateRange }) {
                             <ModalBody>
                                 <div className="space-y-4">
                                     <div className="flex justify-between">
-                                        <span className="font-semibold">Rating:</span>
-                                        <span>{selectedHotel?.rating}</span>
-                                    </div>
-                                    <div className="flex justify-between">
                                         <span className="font-semibold">Price:</span>
                                         <span>{selectedHotel?.price}</span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <span className="font-semibold">OCCUPANCY:</span>
+                                        <span>{selectedHotel?.occupancy}</span>
                                     </div>
                                     <div className="flex justify-between">
                                         <span className="font-semibold">ADR:</span>
@@ -154,6 +154,41 @@ export default function App({ selectedKey, selected, dateRange }) {
                                         <span className="font-semibold">RevPAR:</span>
                                         <span>{selectedHotel?.revpar}</span>
                                     </div>
+                                    {selectedHotel?.rates && (
+                                        <Table 
+                                            aria-label="Room rates"
+                                            isStriped
+                                            className="mt-4"
+                                        >
+                                            <TableHeader>
+                                                <TableColumn key="header">Room Type</TableColumn>
+                                                <TableColumn key="rating">Rating</TableColumn>
+                                                <TableColumn key="reviews">Reviews</TableColumn>
+                                                <TableColumn key="currentPrice">Current Price</TableColumn>
+                                                <TableColumn key="totalPrice">Total Price</TableColumn>
+                                                <TableColumn key="availability">Availability</TableColumn>
+                                            </TableHeader>
+                                            <TableBody
+                                                items={selectedHotel.rates ?? []}
+                                            >
+                                                {(item) => (
+                                                    <TableRow key={item.header}>
+                                                        {(columnKey) => (
+                                                            <TableCell>
+                                                                {columnKey === "header" ? item.header :
+                                                                 columnKey === "rating" ? (item.rating || 'N/A') :
+                                                                 columnKey === "reviews" ? (item.reviews || 'N/A') :
+                                                                 columnKey === "currentPrice" ? `$${item.rates[0]?.currentPrice || 'N/A'}` :
+                                                                 columnKey === "totalPrice" ? `$${item.rates[0]?.totalPrice || 'N/A'}` :
+                                                                 columnKey === "availability" ? item.maxAvailability :
+                                                                 'N/A'}
+                                                            </TableCell>
+                                                        )}
+                                                    </TableRow>
+                                                )}
+                                            </TableBody>
+                                        </Table>
+                                    )}
                                 </div>
                             </ModalBody>
                             <ModalFooter>
