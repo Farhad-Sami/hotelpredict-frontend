@@ -30,7 +30,7 @@ export default function App({ selectedKey, selected }) {
     const search = selectedKey || "none";
     const keyword = selected || "none";
 
-    const { data, isLoading } = useSWR(`/api/filter?search=${search}&keyword=${keyword}&page=${page}`, fetcher, {
+    const { data, isLoading } = useSWR(`/api/filter?search=${search}&keyword=${keyword}&page=${keyword === "title" ? 0 : page}`, fetcher, {
         keepPreviousData: true,
     });
     // const { data, isLoading } = useSWR(`https://swapi.py4e.com/api/people?page=${page}`, fetcher, {
