@@ -37,7 +37,7 @@ export async function GET(request) {
         batchPromises.push((async () => {
           let resultss = [];
           let days = 1;
-          
+
           const checkin = getDateWithAddedDays(0);
           const checkout = getDateWithAddedDays(1);
 
@@ -58,33 +58,52 @@ export async function GET(request) {
           let temp = 0;
           let totalrates = 0;
           let allavailability = 0;
-
-          for (const ele of promise) {
-            if (ele.rates?.length > 0 && ele.rates[0].currentPrice) {
-              if (ele.rates[0].currentPrice>0) {
-                temp = Math.max(temp, ele.rates[0].currentPrice);
+          for (let ii = 0; ii < promise.length; ii++) {
+            let pricenow = 0;
+            const ele = promise[ii];
+            // Check if rates array exists and has elements
+            if (ele.rates?.length > 0 && isNaN(ele.rates[0].currentPrice)) {
+              if (temp == 0) {
+                temp = ele.rates[0].totalPrice;
+                pricenow = temp;
+              } else if (ele.rates[0].totalPrice < temp) {
+                temp = ele.rates[0].totalPrice;
+                pricenow = temp;
+              }
+              totalrates += ele.rates[0].totalPrice;
+            } else if (ele.rates?.length > 0 && ele.rates[0].currentPrice) {
+              if (ele.rates[0].currentPrice > 0) {
+                if (temp == 0) {
+                  temp = ele.rates[0].currentPrice;
+                  pricenow = temp;
+                } else if (ele.rates[0].currentPrice < temp) {
+                  temp = ele.rates[0].currentPrice;
+                  pricenow = temp;
+                }
                 totalrates += ele.rates[0].currentPrice;
               }
             }
 
             const eleav = ele.maxAvailability;
-            let av = 0;
+            let av;
             try {
               av = parseInt(eleav.match(/\d+/)) || 0;
             } catch (error) {
               av = eleav;
             }
-            av = av || tempavail;
-            allavailability += av;
+            if (av == 0 && ele.rates?.length > 0) {
+              av = tempavail;
+            }
+            allavailability = allavailability + av;
           }
 
           const occupiedRooms = total_room - allavailability;
           const occupancyPercentage = total_room > 0 ? (occupiedRooms / total_room) * 100 : 0;
-          
-          hotel.price = `$${temp}`;
-          hotel.occupancy = `${occupancyPercentage.toFixed(2)}%`;
-          hotel.adr = `$${occupiedRooms > 0 ? (totalrates / occupiedRooms).toFixed(2) : "0.00"}`;
-          hotel.revpar = `$${total_room > 0 ? (totalrates / total_room).toFixed(2) : "0.00"}`;
+
+          hotel.price = temp == 0 ? "Sold Out" : `$${temp}`;
+          hotel.occupancy = temp == 0 ? "-" : `${occupancyPercentage.toFixed(2)}%`;
+          hotel.adr = temp == 0 ? "-" : `${(totalrates / occupiedRooms).toFixed(2)}`;
+          hotel.revpar = temp == 0 ? "-" : `${(totalrates / total_room).toFixed(2)}`;
           hotel.rates = promise;
 
           return hotel;
@@ -111,128 +130,129 @@ export async function GET(request) {
 function scrape(hotel_id, checkin, checkout, data) {
   const allRates = [];
   for (const element of data[0].data.propertyOffers.categorizedListings) {
-      const header = element?.header?.text || '';
-      const rating = element?.lodgingReview?.rating?.badge?.text || '';
 
-      let reviews = '';
-      try {
-          for (const phrase of element?.lodgingReview?.rating?.phrases || []) {
-              if (phrase?.phraseParts?.[0]?.text?.includes('reviews')) {
-                  reviews = phrase.phraseParts[0].text.replace('reviews', '');
-                  break;
-              }
-          }
-      } catch {
-          // continue
+    const header = element?.header?.text || '';
+    const rating = element?.lodgingReview?.rating?.badge?.text || '';
+
+    let reviews = '';
+    try {
+      for (const phrase of element?.lodgingReview?.rating?.phrases || []) {
+        if (phrase?.phraseParts?.[0]?.text?.includes('reviews')) {
+          reviews = phrase.phraseParts[0].text.replace('reviews', '');
+          break;
+        }
       }
+    } catch {
+      // continue
+    }
 
-      const optionList = {};
-      try {
-          for (const i of element.primarySelections[0].secondarySelections) {
-              const secondaryDesc = i.secondarySelection ? i.secondarySelection.description : '';
-              for (const ii of i.tertiarySelections) {
-                  if (ii.optionId !== null) {
-                      optionList[ii.optionId] = [ii.description, secondaryDesc];
-                  }
-              }
+    const optionList = {};
+    try {
+      for (const i of element.primarySelections[0].secondarySelections) {
+        const secondaryDesc = i.secondarySelection ? i.secondarySelection.description : '';
+        for (const ii of i.tertiarySelections) {
+          if (ii.optionId !== null) {
+            optionList[ii.optionId] = [ii.description, secondaryDesc];
           }
-      } catch {
-          // continue
+        }
       }
+    } catch {
+      // continue
+    }
 
-      const rates = [];
-      let maxAvailability = 0;
+    const rates = [];
+    let maxAvailability = 0;
 
-      for (const i of element.primarySelections[0].propertyUnit?.ratePlans || []) {
+    for (const i of element.primarySelections[0].propertyUnit?.ratePlans || []) {
+      try {
+        let currentPrice = '';
+        let totalPrice = '';
+        let availability = '';
+
+        // Get price details safely
+        const priceDetails = i?.priceDetails?.[0] || {};
+        const priceMessages = priceDetails?.price?.displayMessages || [];
+
+        for (const ii of priceMessages) {
           try {
-              let currentPrice = '';
-              let totalPrice = '';
-              let availability = '';
+            const lineItems = ii?.lineItems?.[0] || {};
 
-              // Get price details safely
-              const priceDetails = i?.priceDetails?.[0] || {};
-              const priceMessages = priceDetails?.price?.displayMessages || [];
-
-              for (const ii of priceMessages) {
-                  try {
-                      const lineItems = ii?.lineItems?.[0] || {};
-
-                      if ('value' in lineItems) {
-                          try {
-                              currentPrice = parseFloat(lineItems.value.replace(/[^\d.]/g, ''));
-                          } catch {
-                              currentPrice = '';
-                          }
-                      }
-
-                      if ('price' in lineItems) {
-                          try {
-                              totalPrice = parseFloat(lineItems.price?.formatted?.replace(/[^\d.]/g, ''));
-                          } catch {
-                              totalPrice = '';
-                          }
-                      }
-                  } catch {
-                      continue;
-                  }
-              }
-
-              // Handle availability safely
+            if ('value' in lineItems) {
               try {
-                  const scarcityMessage = priceDetails?.availability?.scarcityMessage;
-                  if (scarcityMessage === null && currentPrice !== '') {
-                      availability = 0;
-                  } else if (scarcityMessage) {
-                      availability = parseFloat(scarcityMessage.replace(/[^\d.]/g, ''));
-                      if (availability > maxAvailability) {
-                          maxAvailability = availability;
-                      }
-                  } else {
-                      availability = '';
-                  }
+                currentPrice = parseFloat(lineItems.value.replace(/[^\d.]/g, ''));
               } catch {
-                  availability = '';
+                currentPrice = '';
               }
+            }
 
-              // Get rate type and extras safely
-              const rateId = i?.id || '';
-              const rateType = optionList[rateId]?.[1] || '';
-              const rateExtras = optionList[rateId]?.[0] || '';
-
-              rates.push({
-                  type: rateType,
-                  extras: rateExtras,
-                  currentPrice,
-                  totalPrice,
-                  availability
-              });
-
+            if ('price' in lineItems) {
+              try {
+                totalPrice = parseFloat(lineItems.price?.formatted?.replace(/[^\d.]/g, ''));
+              } catch {
+                totalPrice = '';
+              }
+            }
           } catch {
-              continue;
+            continue;
           }
-      }
+        }
 
-      allRates.push({
-          hotel_id,
-          header,
-          rating,
-          reviews,
-          rates,
-          maxAvailability,
-          checkin,
-          checkout
-      });
+        // Handle availability safely
+        try {
+          const scarcityMessage = priceDetails?.availability?.scarcityMessage;
+          if (scarcityMessage === null && currentPrice !== '') {
+            availability = 0;
+          } else if (scarcityMessage) {
+            availability = parseFloat(scarcityMessage.replace(/[^\d.]/g, ''));
+            if (availability > maxAvailability) {
+              maxAvailability = availability;
+            }
+          } else {
+            availability = '';
+          }
+        } catch {
+          availability = '';
+        }
+
+        // Get rate type and extras safely
+        const rateId = i?.id || '';
+        const rateType = optionList[rateId]?.[1] || '';
+        const rateExtras = optionList[rateId]?.[0] || '';
+
+        rates.push({
+          type: rateType,
+          extras: rateExtras,
+          currentPrice,
+          totalPrice,
+          availability
+        });
+
+      } catch {
+        continue;
+      }
+    }
+
+    allRates.push({
+      hotel_id,
+      header,
+      rating,
+      reviews,
+      rates,
+      maxAvailability,
+      checkin,
+      checkout
+    });
   }
   return allRates;
 }
 const axiosInstance = axios.create({
   baseURL: 'https://www.hotels.com/graphql',
   headers: {
-      'Accept': '*/*',
-      'Accept-Language': 'en-US,en;q=0.9',
-      'Client-Info': 'shopping-pwa,d4abe2b5ece307fd35bdb32a2d91c434505979cf,us-west-2',
-      'Content-Type': 'application/json',
-      'Origin': 'https://www.hotels.com'
+    'Accept': '*/*',
+    'Accept-Language': 'en-US,en;q=0.9',
+    'Client-Info': 'shopping-pwa,d4abe2b5ece307fd35bdb32a2d91c434505979cf,us-west-2',
+    'Content-Type': 'application/json',
+    'Origin': 'https://www.hotels.com'
   },
   timeout: 120000 // timeout in milliseconds (120 seconds)
 });
@@ -248,55 +268,55 @@ const axiosInstance = axios.create({
 
 const makeRequest = async (hotel_id, property_id, region_id, week_checkin, week_checkout) => {
   const payload = [
-      {
-          operationName: 'RoomsAndRatesPropertyOffersQuery',
-          variables: {
-              propertyId: property_id,
-              searchCriteria: {
-                  primary: {
-                      dateRange: {
-                          checkInDate: week_checkin,
-                          checkOutDate: week_checkout
-                      },
-                      destination: {
-                          regionId: region_id
-                      },
-                      rooms: [
-                          {
-                              adults: 2,
-                              children: []
-                          }
-                      ]
-                  }
-              },
-              referrer: 'HSR',
-              context: {
-                  siteId: 300000034,
-                  locale: 'en_AS',
-                  eapid: 34,
-                  tpid: 3200,
-                  currency: 'USD',
-                  device: {
-                      type: 'DESKTOP'
-                  }
+    {
+      operationName: 'RoomsAndRatesPropertyOffersQuery',
+      variables: {
+        propertyId: property_id,
+        searchCriteria: {
+          primary: {
+            dateRange: {
+              checkInDate: week_checkin,
+              checkOutDate: week_checkout
+            },
+            destination: {
+              regionId: region_id
+            },
+            rooms: [
+              {
+                adults: 2,
+                children: []
               }
-          },
-          extensions: {
-              persistedQuery: {
-                  version: 1,
-                  sha256Hash: 'd511d3a622b4c844208cce495fd91895297116fcce21b509b8f848bb8f23f97d'
-              }
+            ]
           }
+        },
+        referrer: 'HSR',
+        context: {
+          siteId: 300000034,
+          locale: 'en_AS',
+          eapid: 34,
+          tpid: 3200,
+          currency: 'USD',
+          device: {
+            type: 'DESKTOP'
+          }
+        }
+      },
+      extensions: {
+        persistedQuery: {
+          version: 1,
+          sha256Hash: 'd511d3a622b4c844208cce495fd91895297116fcce21b509b8f848bb8f23f97d'
+        }
       }
+    }
   ];
 
   try {
-      const response = await axiosInstance.post('', payload);
-      const scrapedInfo = scrape(hotel_id, formatToSQLDate(week_checkin), formatToSQLDate(week_checkout), response.data) // scrapeRoomInfo(hotel_id, response.data);
-      return scrapedInfo;
+    const response = await axiosInstance.post('', payload);
+    const scrapedInfo = scrape(hotel_id, formatToSQLDate(week_checkin), formatToSQLDate(week_checkout), response.data) // scrapeRoomInfo(hotel_id, response.data);
+    return scrapedInfo;
   } catch (error) {
-      console.error('Error:', error.message);
-      return [];
+    console.error('Error:', error.message);
+    return [];
   }
 }
 function getDateWithAddedDays(daysToAdd = 0) {
@@ -304,9 +324,9 @@ function getDateWithAddedDays(daysToAdd = 0) {
   currentDate.setDate(currentDate.getDate() + daysToAdd);
 
   return {
-      day: currentDate.getDate(),
-      month: currentDate.getMonth() + 1, // Months are zero-indexed
-      year: currentDate.getFullYear(),
+    day: currentDate.getDate(),
+    month: currentDate.getMonth() + 1, // Months are zero-indexed
+    year: currentDate.getFullYear(),
   };
 }
 function formatToSQLDate(dateObj) {

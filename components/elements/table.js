@@ -31,8 +31,8 @@ export default function App({ selectedKey, selected }) {
     // if selectedKey & selected is not empty, then use them as search & keyword otherwise set data to []
     const search = selectedKey || "none";
     const keyword = selected || "none";
-    
-    const { data, isLoading } = useSWR(`/api/filter?search=${search}&keyword=${keyword}&page=${page}`, fetcher, {
+
+    const { data, isLoading } = useSWR(`/api/filter?search=${search}&keyword=${keyword}&page=${page == 0 ? 0 : page - 1}`, fetcher, {
         keepPreviousData: true,
     });
     // const { data, isLoading } = useSWR(`https://swapi.py4e.com/api/people?page=${page}`, fetcher, {
