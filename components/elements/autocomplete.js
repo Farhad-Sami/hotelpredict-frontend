@@ -5,8 +5,8 @@ import cities from "../data/cities.json";
 import destinations from "../data/destinations.json";
 import titles from "../data/titles.json";
 import { Tabs, Tab } from "@nextui-org/tabs";
-import { Input } from "@nextui-org/input";
-import { Button } from "@nextui-org/button";
+// import { Input } from "@nextui-org/input";
+// import { Button } from "@nextui-org/button";
 import { Card, CardBody, CardHeader } from "@nextui-org/card";
 import { DateRangePicker } from "@nextui-org/date-picker";
 
