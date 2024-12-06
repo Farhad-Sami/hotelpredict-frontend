@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { Radio, RadioGroup } from "@nextui-org/radio";
+// import { Radio, RadioGroup } from "@nextui-org/radio";
 import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, getKeyValue } from "@nextui-org/table";
 
 import { Pagination, } from "@nextui-org/pagination";
@@ -15,8 +15,6 @@ export default function App({ selectedKey, selected }) {
     const { isOpen, onOpen, onClose } = useDisclosure();
     const [backdrop, setBackdrop] = useState('blur')
 
-    const backdrops = ["opaque", "blur", "transparent"];
-
     const handleOpen = (backdrop) => {
         setBackdrop(backdrop)
         onOpen();
@@ -26,11 +24,15 @@ export default function App({ selectedKey, selected }) {
 
     const [page, setPage] = useState(0);
     const [pages, setPages] = useState(0);
+    useEffect(() => {
+        setPage(0);
+        setPages(0);
+    }, [selected]);
     // if selectedKey & selected is not empty, then use them as search & keyword otherwise set data to []
     const search = selectedKey || "none";
     const keyword = selected || "none";
-
-    const { data, isLoading } = useSWR(`/api/filter?search=${search}&keyword=${keyword}&page=${keyword === "title" ? 0 : page}`, fetcher, {
+    
+    const { data, isLoading } = useSWR(`/api/filter?search=${search}&keyword=${keyword}&page=${page}`, fetcher, {
         keepPreviousData: true,
     });
     // const { data, isLoading } = useSWR(`https://swapi.py4e.com/api/people?page=${page}`, fetcher, {
@@ -87,8 +89,10 @@ export default function App({ selectedKey, selected }) {
                     <TableColumn key="rating">Rating</TableColumn>
                     <TableColumn key="review">Reviews</TableColumn>
                     <TableColumn key="city">City</TableColumn>
-                    <TableColumn key="province">Province</TableColumn>
-                    <TableColumn key="total_room">Total Room</TableColumn>
+                    <TableColumn key="price">Price</TableColumn>
+                    <TableColumn key="occupancy">Occupancy</TableColumn>
+                    <TableColumn key="adr">ADR</TableColumn>
+                    <TableColumn key="revpar">RevPAR</TableColumn>
                     <TableColumn key="details">Details</TableColumn>
                 </TableHeader>
                 <TableBody
