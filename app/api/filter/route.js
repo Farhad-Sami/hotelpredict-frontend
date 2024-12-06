@@ -61,8 +61,10 @@ export async function GET(request) {
 
           for (const ele of promise) {
             if (ele.rates?.length > 0 && ele.rates[0].currentPrice) {
-              temp = Math.max(temp, ele.rates[0].currentPrice);
-              totalrates += ele.rates[0].currentPrice;
+              if (ele.rates[0].currentPrice>0) {
+                temp = Math.max(temp, ele.rates[0].currentPrice);
+                totalrates += ele.rates[0].currentPrice;
+              }
             }
 
             const eleav = ele.maxAvailability;
