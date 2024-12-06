@@ -5,8 +5,8 @@ import cities from "../data/cities.json";
 import destinations from "../data/destinations.json";
 import titles from "../data/titles.json";
 import { Tabs, Tab } from "@nextui-org/tabs";
-// import { Input } from "@nextui-org/input";
-// import { Button } from "@nextui-org/button";
+import { Input } from "@nextui-org/input";
+import { Button } from "@nextui-org/button";
 import { Card, CardBody, CardHeader } from "@nextui-org/card";
 import { DateRangePicker } from "@nextui-org/date-picker";
 
@@ -21,6 +21,7 @@ export default function App() {
     const [value, setValue] = useState('');
     const [selectedKey, setSelectedKey] = useState(null);
     const [selected, setSelected] = useState("city");
+    const [dateRange, setDateRange] = useState(null);
 
 
     const filterItems = (items, inputValue) => {
@@ -69,6 +70,10 @@ export default function App() {
         }
     };
 
+    const handleDateRangeChange = (range) => {
+        setDateRange(range);
+    };
+
     return (
         <div className="flex w-full p-4 gap-4 flex-col xl:flex-row">
 
@@ -95,6 +100,8 @@ export default function App() {
                             <DateRangePicker
                                 label="Select Check-in and Check-out Dates"
                                 visibleMonths={2}
+                                onChange={handleDateRangeChange}
+                                value={dateRange}
                             />
                         </Tab>
                         <Tab key="title" title="Title" className="flex flex-row gap-3">
@@ -111,6 +118,8 @@ export default function App() {
                             <DateRangePicker
                                 label="Select Check-in and Check-out Dates"
                                 visibleMonths={2}
+                                onChange={handleDateRangeChange}
+                                value={dateRange}
                             />
                         </Tab>
                         <Tab key="destination" title="Destination" className="flex flex-row gap-3">
@@ -127,13 +136,15 @@ export default function App() {
                             <DateRangePicker
                                 label="Select Check-in and Check-out Dates"
                                 visibleMonths={2}
+                                onChange={handleDateRangeChange}
+                                value={dateRange}
                             />
                         </Tab>
                     </Tabs>
                     <MapboxMap />
                 </CardBody>
             </Card>
-            <Table selectedKey={selectedKey} selected={selected} />
+            <Table selectedKey={selectedKey} selected={selected} dateRange={dateRange} />
         </div>
     );
 }

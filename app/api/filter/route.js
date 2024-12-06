@@ -102,8 +102,8 @@ export async function GET(request) {
 
           hotel.price = temp == 0 ? "Sold Out" : `$${temp}`;
           hotel.occupancy = temp == 0 ? "-" : `${occupancyPercentage.toFixed(2)}%`;
-          hotel.adr = temp == 0 ? "-" : `${(totalrates / occupiedRooms).toFixed(2)}`;
-          hotel.revpar = temp == 0 ? "-" : `${(totalrates / total_room).toFixed(2)}`;
+          hotel.adr = temp == 0 || occupiedRooms <= 0 ? "-" : `$${(totalrates / occupiedRooms).toFixed(2)}`;
+          hotel.revpar = temp == 0 || total_room <= 0 ? "-" : `$${(totalrates / total_room).toFixed(2)}`;
           hotel.rates = promise;
 
           return hotel;

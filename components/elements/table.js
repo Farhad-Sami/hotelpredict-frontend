@@ -10,13 +10,15 @@ import useSWR from "swr";
 // import { useTheme } from "next-themes";
 const fetcher = (...args) => fetch(...args).then((res) => res.json());
 
-export default function App({ selectedKey, selected }) {
+export default function App({ selectedKey, selected, dateRange }) {
     // const { theme } = useTheme();
     const { isOpen, onOpen, onClose } = useDisclosure();
     const [backdrop, setBackdrop] = useState('blur')
+    const [selectedHotel, setSelectedHotel] = useState(null);
 
-    const handleOpen = (backdrop) => {
-        setBackdrop(backdrop)
+    const handleOpen = (backdrop, hotel) => {
+        setSelectedHotel(hotel);
+        setBackdrop(backdrop);
         onOpen();
     }
 
@@ -113,7 +115,7 @@ export default function App({ selectedKey, selected }) {
                                                 radius="full"
                                                 color="primary"
                                                 variant="shadow"
-                                                onPress={() => handleOpen("blur")}
+                                                onPress={() => handleOpen("blur", item)}
                                                 className="capitalize"
                                             >
                                                 View
@@ -131,25 +133,28 @@ export default function App({ selectedKey, selected }) {
                 <ModalContent>
                     {(onClose) => (
                         <>
-                            <ModalHeader className="flex flex-col gap-1">Modal Title</ModalHeader>
+                            <ModalHeader className="flex flex-col gap-1">
+                                {selectedHotel?.title || 'Hotel Details'}
+                            </ModalHeader>
                             <ModalBody>
-                                <p>
-                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                                    Nullam pulvinar risus non risus hendrerit venenatis.
-                                    Pellentesque sit amet hendrerit risus, sed porttitor quam.
-                                </p>
-                                <p>
-                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                                    Nullam pulvinar risus non risus hendrerit venenatis.
-                                    Pellentesque sit amet hendrerit risus, sed porttitor quam.
-                                </p>
-                                <p>
-                                    Magna exercitation reprehenderit magna aute tempor cupidatat consequat elit
-                                    dolor adipisicing. Mollit dolor eiusmod sunt ex incididunt cillum quis.
-                                    Velit duis sit officia eiusmod Lorem aliqua enim laboris do dolor eiusmod.
-                                    Et mollit incididunt nisi consectetur esse laborum eiusmod pariatur
-                                    proident Lorem eiusmod et. Culpa deserunt nostrud ad veniam.
-                                </p>
+                                <div className="space-y-4">
+                                    <div className="flex justify-between">
+                                        <span className="font-semibold">Rating:</span>
+                                        <span>{selectedHotel?.rating}</span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <span className="font-semibold">Price:</span>
+                                        <span>{selectedHotel?.price}</span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <span className="font-semibold">ADR:</span>
+                                        <span>{selectedHotel?.adr}</span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <span className="font-semibold">RevPAR:</span>
+                                        <span>{selectedHotel?.revpar}</span>
+                                    </div>
+                                </div>
                             </ModalBody>
                             <ModalFooter>
                                 <Button color="danger" variant="light" onPress={onClose}>
