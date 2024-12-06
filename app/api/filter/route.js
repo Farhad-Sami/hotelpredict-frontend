@@ -1,14 +1,13 @@
 const axios = require('axios');
 
-async function fetchData(search, keyword) {
+async function fetchData(search, keyword, page) {
   try {
     // Prepare the URL with query parameters
-    const url = `https://sofa-essay-niger-prison.trycloudflare.com/?search=${search}&column=${keyword}&page=0&perpage=10`;
-    // const url = `http://localhost:8000/?search=${search}&column=${keyword}&page=0&perpage=10`;
+    const url = `https://sofa-essay-niger-prison.trycloudflare.com/?search=${search}&column=${keyword}&page=${page}`;
+    // const url = `http://localhost:8000/?search=${search}&column=${keyword}&page=${page}`;
 
     // Send a GET request
     const response = await axios.get(url);
-
     // Log and return the response data
     // console.log("Response Data:", response.data);
     return response.data;
@@ -23,57 +22,58 @@ export async function GET(request) {
     const { searchParams } = new URL(request.url);
     const search = searchParams.get("search") || "";
     const keyword = searchParams.get("keyword") || "";
+    const page = searchParams.get("page") || 0;
     let results = [];
     if (search.length > 2) {
-      results = await fetchData(search, keyword)
+      results = await fetchData(search, keyword, page)
     }
-    for (let i = 0; i < results.length; i++) {
-      const element = results[i];
-      // if (i < 5) {
-      const prp = element.property_id;
-      const regionId = new URL(element.url).searchParams.get('regionId') || '3073';
-      const req = await makeRequest(prp, getDateWithAddedDays(), getDateWithAddedDays(1), regionId)
-      element.prices = req
+    // for (let i = 0; i < results.length; i++) {
+    //   const element = results[i];
+    //   // if (i < 5) {
+    //   const prp = element.property_id;
+    //   const regionId = new URL(element.url).searchParams.get('regionId') || '3073';
+    //   const req = await makeRequest(prp, getDateWithAddedDays(), getDateWithAddedDays(1), regionId)
+    //   element.prices = req
 
-      const total_room = element.total_room;
-      let tempavail;
-      if (total_room < 100) {
-        tempavail = 10;
-      } else {
-        tempavail = Math.ceil(total_room * 0.1); // 10% of total_room
-      }
+    //   const total_room = element.total_room;
+    //   let tempavail;
+    //   if (total_room < 100) {
+    //     tempavail = 10;
+    //   } else {
+    //     tempavail = Math.ceil(total_room * 0.1); // 10% of total_room
+    //   }
 
-      let temp = 0
-      let totalrates = 0
-      let allavailability = 0
-      for (let ii = 0; ii < req.length; ii++) {
-        const ele = await req[ii];
-        if (temp < ele.normalPrice) {
-          temp = ele.normalPrice
-        }
-        totalrates = totalrates + ele.normalPrice
-        const eleav = ele.availability
-        let av;
-        try {
-          av = parseInt(eleav.match(/\d+/)) || 0
-        } catch (error) {
-          av = eleav
-        }
-        if (av == 0) {
-          av = tempavail
-        }
-        allavailability = allavailability + av
-      }
+    //   let temp = 0
+    //   let totalrates = 0
+    //   let allavailability = 0
+    //   for (let ii = 0; ii < req.length; ii++) {
+    //     const ele = await req[ii];
+    //     if (temp < ele.normalPrice) {
+    //       temp = ele.normalPrice
+    //     }
+    //     totalrates = totalrates + ele.normalPrice
+    //     const eleav = ele.availability
+    //     let av;
+    //     try {
+    //       av = parseInt(eleav.match(/\d+/)) || 0
+    //     } catch (error) {
+    //       av = eleav
+    //     }
+    //     if (av == 0) {
+    //       av = tempavail
+    //     }
+    //     allavailability = allavailability + av
+    //   }
 
 
-      const occupancyPercentage = ((total_room - allavailability) / total_room) * 100;
-      element.occupancy = occupancyPercentage.toFixed(2);
-      element.adr = (totalrates / total_room).toFixed(2);
-      element.rev = (element.adr * (element.occupancy / 100)).toFixed(2)
+    //   const occupancyPercentage = ((total_room - allavailability) / total_room) * 100;
+    //   element.occupancy = occupancyPercentage.toFixed(2);
+    //   element.adr = (totalrates / total_room).toFixed(2);
+    //   element.rev = (element.adr * (element.occupancy / 100)).toFixed(2)
 
-      element.price = temp
-      // }
-    }
+    //   element.price = temp
+    //   // }
+    // }
     return new Response(JSON.stringify({ results }), {
       status: 200,
       headers: { "Content-Type": "application/json" },

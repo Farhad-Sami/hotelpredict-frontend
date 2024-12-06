@@ -1,30 +1,56 @@
+'use client';
 import * as React from "react";
-
 import { IconSvgProps } from "@/types";
+import { useTheme } from "next-themes";
 
-export const Logo: React.FC<IconSvgProps> = ({
-  size = 36,
-  width,
-  height,
-  ...props
-}) => (
-  <svg
-    fill="none"
-    height={size || height}
-    viewBox="0 0 32 32"
-    width={size || width}
-    {...props}
-  >
-    <path
-      clipRule="evenodd"
-      d="M17.6482 10.1305L15.8785 7.02583L7.02979 22.5499H10.5278L17.6482 10.1305ZM19.8798 14.0457L18.11 17.1983L19.394 19.4511H16.8453L15.1056 22.5499H24.7272L19.8798 14.0457Z"
-      fill="currentColor"
-      fillRule="evenodd"
-    />
-  </svg>
-);
+export const Logo= () => {
+  const { theme } = useTheme();
+  
+  return (
+    <svg
+      version="1.2"
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 1640 223"
+      width={150}
+      height={100}
+      className={theme === 'light' ? "fill-black" : "fill-white"}
+    >
+      {/* <style>{`
+        .s0 {
+          fill: #000000;
+        }
+        .s1 {
+          fill: #ffffff;
+        }
+      `}</style> */}
+      <g id="Layer 1">
+        <g id="Group">
+          <g id="Text">
+          <path id="&lt;Path&gt;" className="s0" d="m321.3 80.5h23.5v54.8h68.7v-54.8h23.7v134.5h-23.7v-56.2h-68.7v56.2h-23.5z"/>
+  				<path id="&lt;Compound Path&gt;" fillRule="evenodd" className="s0" d="m576.9 162.4c0 35.4-17.8 52.6-45.6 52.6h-22.1c-28.1 0-45.6-17.2-45.6-52.6 0-35.5 17.5-52.6 45.6-52.6h22.1c27.8 0 45.6 17.1 45.6 52.6zm-21.4 0c0-22.7-8.1-32.3-26.2-32.3h-18.1c-18.4 0-26.4 9.6-26.4 32.3 0 22.7 8 32.1 26.4 32.1h18.1c18.1 0 26.2-9.4 26.2-32.1z"/>
+  				<path id="&lt;Path&gt;" className="s0" d="m591.6 109.8h14.3v-24.9h21.3v24.9h29.1v20.3h-29.1v49.8c0 11.8 4.2 15.7 14.2 15.7h14.5v19.4h-18.9c-21.7 0-31.1-8.8-31.1-36.3v-48.6h-14.3z"/>
+  				<path id="&lt;Compound Path&gt;" fillRule="evenodd" className="s0" d="m711.2 194.5h64.4v20.5h-64.4c-26.2 0-36.6-14.8-36.6-34.7v-35.8c0-20 10.4-34.7 36.6-34.7h34.1c24.9 0 35.5 12 35.5 32.2 0 19.4-9.8 30.4-35.7 30.4h-50v7.5c0 8.3 4.6 14.6 16.1 14.6zm-16.1-38.7h49.4c11.3 0 15.6-4.8 15.6-12.5 0-8-4.7-13.2-15-13.2h-33.9c-11.5 0-16.1 6.4-16.1 14.5z"/>
+  				<path id="&lt;Path&gt;" className="s0" d="m827.8 64.2v150.8h-21.1v-150.8z"/>
+  				<path id="&lt;Path&gt;" className="s0" d="m911.9 80.5h69c30.2 0 43.2 18.8 43.2 40.3 0 20.3-11.8 42.2-43.2 42.2h-41.9c-2.2 0-3.4 1-3.4 3.4v48.6h-23.5v-53.2c0-15.1 6.4-21.3 21.2-21.3h48.4c13.3 0 18.7-9.2 18.7-18.5 0-9.8-5.8-18-18.6-18h-69.9z"/>
+  				<path id="&lt;Path&gt;" className="s0" d="m1070.7 109.8h43.2v20.3h-37c-9.4 0-13.6 4.4-13.6 13.6v71.3h-21.1v-74.5c0-21.1 7.8-30.7 28.5-30.7z"/>
+  				<path id="&lt;Compound Path&gt;" fillRule="evenodd" className="s0" d="m1169.1 194.5h64.3v20.5h-64.3c-26.4 0-36.7-14.8-36.7-34.7v-35.8c0-20 10.3-34.7 36.7-34.7h34c24.9 0 35.4 12 35.4 32.2 0 19.4-9.7 30.4-35.6 30.4h-49.9v7.5c0 8.3 4.5 14.6 16.1 14.6zm-16.1-38.7h49.3c11.4 0 15.6-4.8 15.6-12.5 0-8-4.6-13.2-15-13.2h-33.8c-11.6 0-16.1 6.4-16.1 14.5z"/>
+  				<path id="&lt;Compound Path&gt;" fillRule="evenodd" className="s0" d="m1372.9 64.2v105.8c0 30.2-13.6 45-38.7 45h-29c-28.1 0-45.6-17.2-45.6-52.6 0-35.5 17.5-52.6 45.6-52.6h46.3v-45.6zm-21.3 65.9h-44.4c-18.2 0-26.3 9.6-26.3 32.3 0 22.7 8.1 32.1 26.3 32.1h20.9c16.9 0 23.5-7.6 23.5-25.5z"/>
+  				<path id="&lt;Path&gt;" className="s0" d="m1424.1 109.8v105.2h-21.1v-105.2z"/>
+  				<path id="&lt;Path&gt;" className="s0" d="m1424.3 70.2v24.5h-21.3v-24.5z"/>
+            <path id="&lt;Path&gt;" className="s0" d="m1494.9 109.8h54.2v20.3h-52.2c-18.3 0-26.3 9.6-26.3 32.3 0 22.7 8 32 26.3 32h52.2v20.6h-54.2c-28 0-45.6-17.2-45.6-52.6 0-35.5 17.6-52.6 45.6-52.6z"/>
+            <path id="&lt;Path&gt;" className="s0" d="m1563.6 109.8h14.3v-24.9h21.3v24.9h29.1v20.3h-29.1v49.8c0 11.8 4.2 15.7 14.1 15.7h14.6v19.4h-18.9c-21.7 0-31.1-8.8-31.1-36.3v-48.6h-14.3z"/>
+          </g>
+          <g id="Logo">
+            <path id="&lt;Path&gt;" className="s0" d="m186.1 109.4l-16.7-29.1-30.3 52.2-38.9-23.9 42.9-73.8-18.4-31.8-51.6 88.9-16 27.6-57.1 98.4h36.8l47.5-81.8 38.8 23.9-33.6 57.9h36.8l23.9-41.2 16-27.5 21.5-37.1z"/>
+            <path id="&lt;Path&gt;" className="s0" d="m248.8 217.9h-91.6l15.3-28h30.5l-15.7-27.2 14.4-26.4z"/>
+          </g>
+        </g>
+      </g>
+    </svg>
+  );
+};
 
-export const DiscordIcon: React.FC<IconSvgProps> = ({
+export const DiscordIcon= ({
   size = 24,
   width,
   height,
@@ -45,7 +71,7 @@ export const DiscordIcon: React.FC<IconSvgProps> = ({
   );
 };
 
-export const TwitterIcon: React.FC<IconSvgProps> = ({
+export const TwitterIcon= ({
   size = 24,
   width,
   height,
@@ -66,7 +92,7 @@ export const TwitterIcon: React.FC<IconSvgProps> = ({
   );
 };
 
-export const GithubIcon: React.FC<IconSvgProps> = ({
+export const GithubIcon= ({
   size = 24,
   width,
   height,
@@ -94,7 +120,7 @@ export const MoonFilledIcon = ({
   width,
   height,
   ...props
-}: IconSvgProps) => (
+}) => (
   <svg
     aria-hidden="true"
     focusable="false"
@@ -116,7 +142,7 @@ export const SunFilledIcon = ({
   width,
   height,
   ...props
-}: IconSvgProps) => (
+}) => (
   <svg
     aria-hidden="true"
     focusable="false"
@@ -138,7 +164,7 @@ export const HeartFilledIcon = ({
   width,
   height,
   ...props
-}: IconSvgProps) => (
+}) => (
   <svg
     aria-hidden="true"
     focusable="false"
@@ -158,7 +184,7 @@ export const HeartFilledIcon = ({
   </svg>
 );
 
-export const SearchIcon = (props: IconSvgProps) => (
+export const SearchIcon = (props) => (
   <svg
     aria-hidden="true"
     fill="none"
@@ -186,7 +212,7 @@ export const SearchIcon = (props: IconSvgProps) => (
   </svg>
 );
 
-export const NextUILogo: React.FC<IconSvgProps> = (props) => {
+export const NextUILogo= (props) => {
   const { width, height = 40 } = props;
 
   return (

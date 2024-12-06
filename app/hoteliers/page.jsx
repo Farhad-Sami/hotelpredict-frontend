@@ -1,14 +1,9 @@
-// import { title, subtitle } from "@/components/primitives";
-// import DataTable from "@/components/datatable";
-import ControllableStates from "@/components/autoCMM";
+import HotelierSection from "@/components/hotelierSection";
 
-export default function BlogPage() {
-
+export default function HoteliersPage() {
   return (
-    <div className="inline-block text-center">
-      {/* <Search /> */}
-      {/* <DataTable /> */}
-      <ControllableStates />
+    <div>
+      <HotelierSection />
     </div>
 
   );

@@ -75,7 +75,6 @@ export const ThemeSwitch: FC<ThemeSwitchProps> = ({
         ) : (
           <MoonFilledIcon size={22} />
         )}
-        <span className="ml-2">Theme</span>
       </div>
     </Component>
   );
