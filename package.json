@@ -9,6 +9,7 @@
 		"lint": "eslint . --ext .ts,.tsx -c .eslintrc.json --fix"
 	},
 	"dependencies": {
+		"@clerk/nextjs": "^6.8.0",
 		"@nextui-org/accordion": "^2.0.40",
 		"@nextui-org/autocomplete": "^2.1.7",
 		"@nextui-org/button": "2.0.38",

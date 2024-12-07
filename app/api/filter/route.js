@@ -3,7 +3,7 @@ const axios = require('axios');
 async function fetchData(search, keyword, page) {
   try {
     // Prepare the URL with query parameters
-    const url = `https://experiences-gothic-investigate-with.trycloudflare.com/?search=${search}&column=${keyword}&page=${page}`;
+    const url = `${process.env.API_DOMAIN}/?search=${search}&column=${keyword}&page=${page}`; // store the domain in env
     // const url = `http://localhost:8000/?search=${search}&column=${keyword}&page=${page}`;
 
     // Send a GET request
@@ -27,9 +27,9 @@ export async function GET(request) {
       results = await fetchData(search, keyword, page)
     }
     // Process results in batches of 5
-    for (let i = 0; i < results.length; i += 5) {
+    for (let i = 0; i < results.length; i += 25) {
       const batchPromises = [];
-      const batchSize = Math.min(5, results.length - i);
+      const batchSize = Math.min(25, results.length - i);
 
       // Create promises for current batch
       for (let j = 0; j < batchSize; j++) {
@@ -100,10 +100,17 @@ export async function GET(request) {
           const occupiedRooms = total_room - allavailability;
           const occupancyPercentage = total_room > 0 ? (occupiedRooms / total_room) * 100 : 0;
 
-          hotel.price = temp == 0 ? "Sold Out" : `$${temp}`;
-          hotel.occupancy = temp == 0 ? "-" : `${occupancyPercentage.toFixed(2)}%`;
-          hotel.adr = temp == 0 || promise.length <= 0 ? "-" : `${(totalrates / promise.length).toFixed(2)}`;
-          hotel.revpar = temp == 0 || total_room <= 0 ? "-" : `${((occupancyPercentage * (totalrates / promise.length)) / 100).toFixed(2)}`;
+          // Calculate raw metrics
+          const calculatedPrice = temp;
+          const calculatedOccupancy = occupancyPercentage;
+          const calculatedADR = totalrates / promise.length;
+          const calculatedRevPAR = (occupancyPercentage * (totalrates / promise.length)) / 100;
+
+          // Assign formatted values to hotel object
+          hotel.price = calculatedPrice === 0 ? "Sold Out" : `$${calculatedPrice}`;
+          hotel.occupancy = calculatedPrice === 0 ? "-" : `${calculatedOccupancy.toFixed(2)}%`;
+          hotel.adr = calculatedPrice === 0 || promise.length <= 0 ? "-" : `${calculatedADR.toFixed(2)}`;
+          hotel.revpar = calculatedPrice === 0 || total_room <= 0 ? "-" : `${calculatedRevPAR.toFixed(2)}`;
           hotel.rates = promise;
 
           return hotel;

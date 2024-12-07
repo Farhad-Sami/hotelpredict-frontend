@@ -25,7 +25,7 @@ import {
   // SearchIcon,
   Logo,
 } from "@/components/icons";
-
+import { SignInButton, SignedIn, SignedOut, UserButton } from '@clerk/nextjs'
 export const Navbar = () => {
   // const searchInput = (
   //   <Input
@@ -89,6 +89,14 @@ export const Navbar = () => {
           <Link isExternal aria-label="Github" href={siteConfig.links.github}>
             <GithubIcon className="text-default-500" />
           </Link>
+
+          <SignedOut>
+            <SignInButton />
+          </SignedOut>
+          <SignedIn>
+            <UserButton />
+          </SignedIn>
+
           <ThemeSwitch />
         </NavbarItem>
         {/* <NavbarItem className="hidden lg:flex">{searchInput}</NavbarItem> */}
@@ -111,7 +119,15 @@ export const Navbar = () => {
           <GithubIcon className="text-default-500" />
         </Link>
         <ThemeSwitch />
-        <NavbarMenuToggle />
+
+        <SignedOut>
+          <SignInButton />
+        </SignedOut>
+        <SignedIn>
+          <UserButton />
+        </SignedIn>
+
+        <NavbarMenuToggle aria-label="Open navigation menu" />
       </NavbarContent>
 
       <NavbarMenu>

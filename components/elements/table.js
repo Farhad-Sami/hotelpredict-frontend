@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 // import { Radio, RadioGroup } from "@nextui-org/radio";
 import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, getKeyValue } from "@nextui-org/table";
 
@@ -8,6 +8,7 @@ import { Button } from "@nextui-org/button";
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure } from "@nextui-org/modal";
 import useSWR from "swr";
 // import { useTheme } from "next-themes";
+import { Input } from "@nextui-org/input";
 const fetcher = (...args) => fetch(...args).then((res) => res.json());
 
 export default function App({ selectedKey, selected, dateRange }) {
@@ -74,32 +75,127 @@ export default function App({ selectedKey, selected, dateRange }) {
         );
     };
 
+    const [sortDescriptor, setSortDescriptor] = useState({});
+
+    const handleSortChange = (descriptor) => {
+        setSortDescriptor(descriptor);
+        if (!data?.results) return;
+        
+        const sortedItems = [...data.results].sort((a, b) => {
+            const first = a[descriptor.column];
+            const second = b[descriptor.column];
+            const cmp = (parseInt(first) || first) < (parseInt(second) || second) ? -1 : 1;
+
+            return descriptor.direction === "descending" ? -cmp : cmp;
+        });
+        
+        data.results = sortedItems;
+    };
+
+    const [filterValue, setFilterValue] = useState({
+        title: "",
+        price: "",
+        occupancy: "",
+        adr: "",
+        revpar: ""
+    });
+
+    const filteredItems = useMemo(() => {
+        if (!data?.results) return [];
+        
+        return data.results.filter(item => {
+            const titleMatch = item.title.toLowerCase().includes(filterValue.title.toLowerCase());
+            const priceMatch = filterValue.price === "" || 
+                item.price.toLowerCase().includes(filterValue.price);
+            const occupancyMatch = filterValue.occupancy === "" || 
+                item.occupancy.toString().includes(filterValue.occupancy);
+            const adrMatch = filterValue.adr === "" || 
+                item.adr.toString().includes(filterValue.adr);
+            const revparMatch = filterValue.revpar === "" || 
+                item.revpar.toString().includes(filterValue.revpar);
+            
+            return titleMatch && priceMatch && occupancyMatch && adrMatch && revparMatch;
+        });
+    }, [data?.results, filterValue]);
+
     return (
         <div className="flex flex-col gap-3 w-full h-full">
+            <div className="flex flex-col gap-3">
+                <div className="flex gap-4 justify-between">
+                    <Input
+                        isClearable
+                        className="w-full"
+                        placeholder="Search by name..."
+                        value={filterValue.title}
+                        onClear={() => setFilterValue(prev => ({ ...prev, title: "" }))}
+                        onChange={e => setFilterValue(prev => ({ ...prev, title: e.target.value }))}
+                    />
+                    <Input
+                        isClearable
+                        // type="number"
+                        className="w-full"
+                        placeholder="Filter by price..."
+                        value={filterValue.price}
+                        onClear={() => setFilterValue(prev => ({ ...prev, price: "" }))}
+                        onChange={e => setFilterValue(prev => ({ ...prev, price: e.target.value }))}
+                    />
+                </div>
+                {/* <div className="flex gap-4 justify-between mb-4">
+                    <Input
+                        isClearable
+                        type="number"
+                        className="w-full"
+                        placeholder="Filter by occupancy..."
+                        value={filterValue.occupancy}
+                        onClear={() => setFilterValue(prev => ({ ...prev, occupancy: "" }))}
+                        onChange={e => setFilterValue(prev => ({ ...prev, occupancy: e.target.value }))}
+                    />
+                    <Input
+                        isClearable
+                        type="number"
+                        className="w-full"
+                        placeholder="Filter by ADR..."
+                        value={filterValue.adr}
+                        onClear={() => setFilterValue(prev => ({ ...prev, adr: "" }))}
+                        onChange={e => setFilterValue(prev => ({ ...prev, adr: e.target.value }))}
+                    />
+                    <Input
+                        isClearable
+                        type="number"
+                        className="w-full"
+                        placeholder="Filter by RevPAR..."
+                        value={filterValue.revpar}
+                        onClear={() => setFilterValue(prev => ({ ...prev, revpar: "" }))}
+                        onChange={e => setFilterValue(prev => ({ ...prev, revpar: e.target.value }))}
+                    />
+                </div> */}
+            </div>
             <Table
                 // aria-label="Example table with client async pagination"
                 selectionMode="multiple"
-                selectionBehavior={selectionBehavior}
                 isStriped
                 isHeaderSticky
                 classNames={{
-                    base: "max-h-[75vh] overflow-scroll overflow-x-hidden overflow-y-hidden"
+                    base: "max-h-[79vh] overflow-scroll overflow-x-hidden overflow-y-hidden",
+                    th: "bg-primary-pink text-white hover:text-black",
+                    sortIcon: "text-white",
                 }}
+                sortDescriptor={sortDescriptor}
+                onSortChange={handleSortChange}
             >
                 <TableHeader>
-                    <TableColumn key="title">Name</TableColumn>
-                    <TableColumn key="rating">Rating</TableColumn>
-                    <TableColumn key="review">Reviews</TableColumn>
-                    <TableColumn key="city">City</TableColumn>
-                    <TableColumn key="price">Price</TableColumn>
-                    <TableColumn key="occupancy">Occupancy</TableColumn>
-                    <TableColumn key="adr">ADR</TableColumn>
-                    <TableColumn key="revpar">RevPAR</TableColumn>
+                    <TableColumn allowsSorting key="title">Name</TableColumn>
+                    <TableColumn allowsSorting key="rating">Rating</TableColumn>
+                    <TableColumn allowsSorting key="review">Reviews</TableColumn>
+                    <TableColumn allowsSorting key="price">Price</TableColumn>
+                    <TableColumn allowsSorting key="occupancy">Occupancy</TableColumn>
+                    <TableColumn allowsSorting key="adr">ADR</TableColumn>
+                    <TableColumn allowsSorting key="revpar">RevPAR</TableColumn>
                     <TableColumn key="details">Details</TableColumn>
                 </TableHeader>
                 <TableBody
                     emptyContent={"No data to display."}
-                    items={data?.results ?? []}
+                    items={filteredItems}
                     loadingContent={<LoadingIcon />}
                     loadingState={loadingState}
                     className="max-h-[25vh] overflow-scroll overflow-x-hidden overflow-y-hidden"

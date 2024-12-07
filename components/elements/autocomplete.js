@@ -85,8 +85,12 @@ export default function App() {
                         // aria-label="Tabs form"
                         selectedKey={selected}
                         onSelectionChange={setSelected}
+                        classNames={{
+                            tabContent: "text-primary",
+                            cursor: "bg-primary-pink"
+                        }}
                     >
-                        <Tab key="city" title="City" className="flex flex-row gap-3">
+                        <Tab key="city" title="City" className="flex flex-col gap-3 md:flex-row">
                             <Autocomplete
                                 label="Search a City"
                                 variant="bordered"
