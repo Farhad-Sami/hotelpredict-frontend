@@ -113,10 +113,9 @@ export default function App({ selectedKey, selected, dateRange }) {
                                             <Button
                                                 size="sm"
                                                 radius="full"
-                                                color="primary"
+                                                className="bg-primary-pink text-white"
                                                 variant="shadow"
                                                 onPress={() => handleOpen("blur", item)}
-                                                className="capitalize"
                                             >
                                                 View
                                             </Button>
@@ -137,36 +136,38 @@ export default function App({ selectedKey, selected, dateRange }) {
                                 {selectedHotel?.title || 'Hotel Details'}
                             </ModalHeader>
                             <ModalBody>
-                                <div className="space-y-4">
-                                    <div className="flex justify-between">
-                                        <span className="font-semibold">Price:</span>
-                                        <span>{selectedHotel?.price}</span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span className="font-semibold">OCCUPANCY:</span>
-                                        <span>{selectedHotel?.occupancy}</span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span className="font-semibold">ADR:</span>
-                                        <span>{selectedHotel?.adr}</span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span className="font-semibold">RevPAR:</span>
-                                        <span>{selectedHotel?.revpar}</span>
+                                <div className="space-y-1">
+                                    <div className="flex flex-row items-center justify-evenly">
+                                        <div className="flex flex-col text-center">
+                                            <span className="font-semibold text-primary-pink">Price</span>
+                                            <span>{selectedHotel?.price}</span>
+                                        </div>
+                                        <div className="flex flex-col text-center">
+                                            <span className="font-semibold text-primary-pink">OCCUPANCY</span>
+                                            <span>{selectedHotel?.occupancy}</span>
+                                        </div>
+                                        <div className="flex flex-col text-center">
+                                            <span className="font-semibold text-primary-pink">ADR</span>
+                                            <span>{selectedHotel?.adr}</span>
+                                        </div>
+                                        <div className="flex flex-col text-center">
+                                            <span className="font-semibold text-primary-pink">RevPAR</span>
+                                            <span>{selectedHotel?.revpar}</span>
+                                        </div>
                                     </div>
                                     {selectedHotel?.rates && (
-                                        <Table 
+                                        <Table
                                             aria-label="Room rates"
                                             isStriped
                                             className="mt-4"
                                         >
                                             <TableHeader>
-                                                <TableColumn key="header">Room Type</TableColumn>
-                                                <TableColumn key="rating">Rating</TableColumn>
-                                                <TableColumn key="reviews">Reviews</TableColumn>
-                                                <TableColumn key="currentPrice">Current Price</TableColumn>
-                                                <TableColumn key="totalPrice">Total Price</TableColumn>
-                                                <TableColumn key="availability">Availability</TableColumn>
+                                                <TableColumn className="bg-primary-pink text-white" key="header">Room Type</TableColumn>
+                                                <TableColumn className="bg-primary-pink text-white" key="rating">Rating</TableColumn>
+                                                <TableColumn className="bg-primary-pink text-white" key="reviews">Reviews</TableColumn>
+                                                <TableColumn className="bg-primary-pink text-white" key="currentPrice">Current Price</TableColumn>
+                                                <TableColumn className="bg-primary-pink text-white" key="totalPrice">Total Price</TableColumn>
+                                                <TableColumn className="bg-primary-pink text-white" key="availability">Availability</TableColumn>
                                             </TableHeader>
                                             <TableBody
                                                 items={selectedHotel.rates ?? []}
@@ -174,14 +175,14 @@ export default function App({ selectedKey, selected, dateRange }) {
                                                 {(item) => (
                                                     <TableRow key={item.header}>
                                                         {(columnKey) => (
-                                                            <TableCell>
+                                                            <TableCell className={columnKey === "header" ? "" : "text-center"}>
                                                                 {columnKey === "header" ? item.header :
-                                                                 columnKey === "rating" ? (item.rating || 'N/A') :
-                                                                 columnKey === "reviews" ? (item.reviews || 'N/A') :
-                                                                 columnKey === "currentPrice" ? `$${item.rates[0]?.currentPrice || 'N/A'}` :
-                                                                 columnKey === "totalPrice" ? `$${item.rates[0]?.totalPrice || 'N/A'}` :
-                                                                 columnKey === "availability" ? item.maxAvailability :
-                                                                 'N/A'}
+                                                                    columnKey === "rating" ? (item.rating || '-') :
+                                                                        columnKey === "reviews" ? (item.reviews || '-') :
+                                                                            columnKey === "currentPrice" ? (item.rates[0]?.currentPrice ? `$${item.rates[0].currentPrice}` : '-') :
+                                                                                columnKey === "totalPrice" ? (item.rates[0]?.totalPrice ? `$${item.rates[0].totalPrice}` : '-') :
+                                                                                    columnKey === "availability" ? item.maxAvailability :
+                                                                                        '-'}
                                                             </TableCell>
                                                         )}
                                                     </TableRow>
@@ -192,11 +193,8 @@ export default function App({ selectedKey, selected, dateRange }) {
                                 </div>
                             </ModalBody>
                             <ModalFooter>
-                                <Button color="danger" variant="light" onPress={onClose}>
+                                <Button className="bg-primary-pink text-white" onPress={onClose}>
                                     Close
-                                </Button>
-                                <Button color="primary" onPress={onClose}>
-                                    Action
                                 </Button>
                             </ModalFooter>
                         </>
