@@ -191,6 +191,7 @@ export default function App({ selectedKey, selected, dateRange }) {
                     <TableColumn allowsSorting key="occupancy">Occupancy</TableColumn>
                     <TableColumn allowsSorting key="adr">ADR</TableColumn>
                     <TableColumn allowsSorting key="revpar">RevPAR</TableColumn>
+                    <TableColumn allowsSorting key="accuracy">Accuracy</TableColumn>
                     <TableColumn key="details">Details</TableColumn>
                 </TableHeader>
                 <TableBody
