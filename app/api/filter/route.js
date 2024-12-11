@@ -105,6 +105,20 @@ export async function GET(request) {
       // Wait for current batch to complete before moving to next batch
       await Promise.all(batchPromises);
     }
+    
+    // Sort results
+    results = results.sort((a, b) => {
+      // First priority: Sold Out items
+      if (a.price === "Sold Out" && b.price !== "Sold Out") return -1;
+      if (a.price !== "Sold Out" && b.price === "Sold Out") return 1;
+      
+      // Second priority: occupancy (convert from "XX.XX%" to number)
+      const occA = a.occupancy === "-" ? 0 : parseFloat(a.occupancy.replace('%', ''));
+      const occB = b.occupancy === "-" ? 0 : parseFloat(b.occupancy.replace('%', ''));
+      
+      return occB - occA;
+    });
+
     return new Response(JSON.stringify({ results }), {
       status: 200,
       headers: { "Content-Type": "application/json" },

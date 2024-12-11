@@ -59,7 +59,7 @@ export default function App({ selectedKey, selected, dateRange }) {
                 height="40"
                 viewBox="0 0 4096 4096"
                 fill="currentColor"
-                className="animate-ping"
+                className="animate-ping mt-10"
             >
                 <g>
                     <path
@@ -80,7 +80,7 @@ export default function App({ selectedKey, selected, dateRange }) {
     const handleSortChange = (descriptor) => {
         setSortDescriptor(descriptor);
         if (!data?.results) return;
-        
+
         const sortedItems = [...data.results].sort((a, b) => {
             const first = a[descriptor.column];
             const second = b[descriptor.column];
@@ -88,7 +88,7 @@ export default function App({ selectedKey, selected, dateRange }) {
 
             return descriptor.direction === "descending" ? -cmp : cmp;
         });
-        
+
         data.results = sortedItems;
     };
 
@@ -102,18 +102,18 @@ export default function App({ selectedKey, selected, dateRange }) {
 
     const filteredItems = useMemo(() => {
         if (!data?.results) return [];
-        
+
         return data.results.filter(item => {
             const titleMatch = item.title.toLowerCase().includes(filterValue.title.toLowerCase());
-            const priceMatch = filterValue.price === "" || 
+            const priceMatch = filterValue.price === "" ||
                 item.price.toLowerCase().includes(filterValue.price);
-            const occupancyMatch = filterValue.occupancy === "" || 
+            const occupancyMatch = filterValue.occupancy === "" ||
                 item.occupancy.toString().includes(filterValue.occupancy);
-            const adrMatch = filterValue.adr === "" || 
+            const adrMatch = filterValue.adr === "" ||
                 item.adr.toString().includes(filterValue.adr);
-            const revparMatch = filterValue.revpar === "" || 
+            const revparMatch = filterValue.revpar === "" ||
                 item.revpar.toString().includes(filterValue.revpar);
-            
+
             return titleMatch && priceMatch && occupancyMatch && adrMatch && revparMatch;
         });
     }, [data?.results, filterValue]);
